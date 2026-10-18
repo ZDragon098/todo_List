@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Giao diện quản lý công việc và tác vụ hàng ngày kết nối trực tiếp với RESTful Todo API">
+  <title>Hệ Thống Quản Lý Công Việc — Todo API Workbench</title>
+
+  <!-- Phông chữ Google Fonts: Space Grotesk (tiêu đề), Inter (nội dung), JetBrains Mono (mã & trạng thái kỹ thuật) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tệp định dạng giao diện CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body id="application-root-body" data-application-theme="light">
+
+  <!-- ============================================================
+       SIDEBAR NAVIGATION
+       ============================================================ -->
+  <aside class="sidebar" id="application-sidebar">
+    <!-- Sidebar Header / Brand -->
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4"></polyline>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+      </div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">Todo Workbench</span>
+        <span class="sidebar-brand-sub">RESTful API</span>
+      </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar-nav" aria-label="Điều hướng chính">
+      <ul class="sidebar-nav-list">
+        <!-- 1. Thêm công việc -->
+        <li class="sidebar-nav-item">
+          <button type="button" class="sidebar-nav-link" data-section="section-add-task" title="Thêm công việc mới">
+            <span class="sidebar-nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+            </span>
+            <span class="sidebar-nav-text">Thêm công việc</span>
+          </button>
+        </li>
+
+        <!-- 2. Tổng quan -->
+        <li class="sidebar-nav-item">
+          <button type="button" class="sidebar-nav-link sidebar-nav-link-active" data-section="section-overview"
+            title="Tổng quan tiến độ">
+            <span class="sidebar-nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </span>
+            <span class="sidebar-nav-text">Tổng quan</span>
+          </button>
+        </li>
+
+        <!-- 3. Theo dõi (with submenu) -->
+        <li class="sidebar-nav-item sidebar-nav-item-has-sub">
+          <button type="button" class="sidebar-nav-link sidebar-nav-link-toggle" title="Theo dõi công việc">
+            <span class="sidebar-nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+            <span class="sidebar-nav-text">Theo dõi</span>
+            <span class="sidebar-nav-chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </button>
+          <ul class="sidebar-sub-nav">
+            <li class="sidebar-sub-nav-item">
+              <button type="button" class="sidebar-sub-nav-link" data-section="section-tracking-completed"
+                title="Đã hoàn thành">
+                <span class="sidebar-sub-dot sidebar-sub-dot-completed"></span>
+                <span class="sidebar-sub-nav-text">Đã hoàn thành</span>
+              </button>
+            </li>
+            <li class="sidebar-sub-nav-item">
+              <button type="button" class="sidebar-sub-nav-link" data-section="section-tracking-pending"
+                title="Chưa hoàn thành">
+                <span class="sidebar-sub-dot sidebar-sub-dot-pending"></span>
+                <span class="sidebar-sub-nav-text">Chưa hoàn thành</span>
+              </button>
+            </li>
+          </ul>
+        </li>
+
+        <!-- 4. Thông báo -->
+        <li class="sidebar-nav-item">
+          <button type="button" class="sidebar-nav-link" data-section="section-notifications" title="Thông báo">
+            <span class="sidebar-nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </span>
+            <span class="sidebar-nav-text">Thông báo</span>
+            <span class="sidebar-notification-badge" id="sidebar-notification-count">0</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <!-- Nút chuyển đổi chế độ Sáng / Tối (Dark Mode Toggle) -->
+      <button type="button" id="task-theme-toggle-button" class="task-theme-toggle-button"
+        title="Chuyển đổi giao diện Sáng / Tối" aria-label="Chuyển đổi giao diện Sáng / Tối">
+        <svg class="task-theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="task-theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <span id="task-theme-toggle-text-label" class="task-theme-toggle-text-label">Chế độ tối</span>
+      </button>
+
+      <div class="sidebar-footer-info">
+        <div class="application-status-badge">
+          <span class="application-status-indicator-dot"></span>
+          <span class="application-status-indicator-label">SẴN SÀNG</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MOBILE TOPBAR (shown only on small screens)
+       ============================================================ -->
+  <header id="application-navigation-bar" class="application-navigation-bar">
+    <div class="application-navigation-container">
+      <button type="button" class="sidebar-toggle-button" id="sidebar-toggle-button" aria-label="Mở menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <div class="application-brand-wrapper">
+        <div class="application-brand-icon-box">
+          <svg class="application-brand-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </div>
+        <div class="application-brand-text-column">
+          <span class="application-brand-system-name">HỆ THỐNG QUẢN LÝ CÔNG VIỆC</span>
+          <span class="application-brand-subheading">Express RESTful API Workbench</span>
+        </div>
+      </div>
+
+      <div class="application-navigation-status-group">
+        <div class="application-route-endpoint-pill">
+          <span class="application-route-method-tag">ENDPOINT</span>
+          <span class="application-route-path-text">/todos</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ============================================================
+       MAIN CONTENT AREA
+       ============================================================ -->
+  <main id="application-main-content-layout" class="application-main-content-layout">
+    <div class="application-central-container">
+
+      <!-- ========================================================
+           SECTION: TỔNG QUAN (Overview) — Default visible
+           ======================================================== -->
+      <div class="content-section content-section-active" id="section-overview">
+
+        <!-- Phần 1: Bảng tổng quan thông số và thanh tiến độ -->
+        <section id="task-overview-metrics-section" class="task-overview-metrics-section"
+          aria-label="Tổng quan tiến độ công việc">
+          <div class="section-page-header">
+            <h1 class="section-page-title">Tổng quan</h1>
+            <p class="section-page-subtitle">Theo dõi tiến độ và thống kê công việc tổng thể</p>
+          </div>
+          <div class="task-metrics-grid">
+
+            <div class="task-metric-card" id="task-metric-card-total">
+              <div class="task-metric-card-header">
+                <span class="task-metric-card-title">TỔNG CÔNG VIỆC</span>
+                <span class="task-metric-card-tag">GET /todos</span>
+              </div>
+              <div class="task-metric-card-body">
+                <span id="task-summary-total-count" class="task-metric-card-number">0</span>
+                <span class="task-metric-card-unit">công việc</span>
+              </div>
+            </div>
+
+            <div class="task-metric-card" id="task-metric-card-pending">
+              <div class="task-metric-card-header">
+                <span class="task-metric-card-title">ĐANG THỰC HIỆN</span>
+                <span class="task-metric-card-tag">done: false</span>
+              </div>
+              <div class="task-metric-card-body">
+                <span id="task-summary-pending-count" class="task-metric-card-number">0</span>
+                <span class="task-metric-card-unit">cần hoàn thành</span>
+              </div>
+            </div>
+
+            <div class="task-metric-card" id="task-metric-card-completed">
+              <div class="task-metric-card-header">
+                <span class="task-metric-card-title">ĐÃ HOÀN THÀNH</span>
+                <span class="task-metric-card-tag">done: true</span>
+              </div>
+              <div class="task-metric-card-body">
+                <span id="task-summary-completed-count" class="task-metric-card-number">0</span>
+                <span class="task-metric-card-unit">đạt mục tiêu</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Thanh chỉ báo tiến trình -->
+          <div class="task-progress-wrapper" id="task-progress-wrapper-container">
+            <div class="task-progress-header-row">
+              <span class="task-progress-title-label">TIẾN ĐỘ THỰC HIỆN TOÀN DIỆN</span>
+              <span id="task-progress-percentage-label" class="task-progress-percentage-label">0%</span>
+            </div>
+            <div class="task-progress-track-bar">
+              <div id="task-progress-fill-bar" class="task-progress-fill-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Phần 3: Thanh công cụ tìm kiếm, bộ lọc trạng thái, lọc chủ đề & sắp xếp -->
+        <section id="task-toolbar-control-section" class="task-toolbar-control-section"
+          aria-label="Bộ lọc, tìm kiếm và sắp xếp công việc">
+          <div class="task-toolbar-container">
+
+            <!-- Ô tìm kiếm công việc toàn diện theo tiêu đề, mô tả, chủ đề hoặc ID -->
+            <div class="task-search-input-container">
+              <svg class="task-search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <label for="task-search-input-field" class="task-creation-accessible-label">Tìm kiếm công việc</label>
+              <input type="text" id="task-search-input-field" class="task-search-input-field"
+                placeholder="Tìm kiếm theo tiêu đề, mô tả, hạn chót, giờ...">
+            </div>
+
+            <!-- Bộ lọc theo chủ đề bo tròn với icon đen trắng -->
+            <div class="task-topic-filter-container">
+              <label for="task-topic-filter-select-field" class="task-creation-accessible-label">Lọc theo chủ đề</label>
+              <div class="task-topic-filter-field-wrapper">
+                <svg class="task-field-icon-monochrome" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                <select id="task-topic-filter-select-field" class="task-topic-filter-select-field">
+                  <option value="all">Tất Cả</option>
+                  <option value="Học tập">Học tập</option>
+                  <option value="Công việc">Công việc</option>
+                  <option value="Dự án">Dự án</option>
+                  <option value="Cá nhân">Cá nhân</option>
+                  <option value="Sức khỏe">Sức khỏe</option>
+                  <option value="Khác">Khác</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Bộ điều khiển sắp xếp (Sắp đến hạn, chưa đến hạn, theo ID) -->
+            <div class="task-sorting-container">
+              <label for="task-sorting-select-field" class="task-creation-accessible-label">Sắp xếp công việc</label>
+              <div class="task-sorting-field-wrapper">
+                <svg class="task-field-icon-monochrome" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+                <select id="task-sorting-select-field" class="task-sorting-select-field">
+                  <option value="identifier-descending">Sắp xếp: Mới nhất</option>
+                  <option value="identifier-ascending">Sắp xếp: Cũ nhất</option>
+                  <option value="deadline-approaching">Sắp xếp: Sắp đến hạn</option>
+                  <option value="deadline-distant">Sắp xếp: Chưa đến hạn</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Bộ nút lọc trạng thái -->
+            <div class="task-filter-navigation-group" role="tablist" aria-label="Lọc theo trạng thái">
+              <button type="button" id="task-filter-all-button"
+                class="task-filter-option-button task-filter-option-button-active" role="tab" aria-selected="true">
+                <span class="task-filter-option-label">Tất Cả</span>
+                <span id="task-filter-counter-all" class="task-filter-counter-pill">0</span>
+              </button>
+              <button type="button" id="task-filter-pending-button" class="task-filter-option-button" role="tab"
+                aria-selected="false">
+                <span class="task-filter-option-label">Đang Làm</span>
+                <span id="task-filter-counter-pending" class="task-filter-counter-pill">0</span>
+              </button>
+              <button type="button" id="task-filter-completed-button" class="task-filter-option-button" role="tab"
+                aria-selected="false">
+                <span class="task-filter-option-label">Đã Xong</span>
+                <span id="task-filter-counter-completed" class="task-filter-counter-pill">0</span>
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Phần 4: Danh sách hiển thị các công việc -->
+        <section id="task-display-list-section" class="task-display-list-section" aria-label="Danh sách công việc">
+          <div class="task-list-header-row">
+            <div class="task-list-header-left">
+              <h2 class="task-list-section-title">Danh Sách Công Việc</h2>
+              <span class="task-list-section-caption">Hiển thị các bản ghi đồng bộ trực tiếp từ server</span>
+            </div>
+            <div class="task-list-header-right">
+              <span id="task-list-current-sort-caption" class="task-list-sorting-indicator">SẮP XẾP: THEO MÃ ID GIẢM
+                DẦN</span>
+            </div>
+          </div>
+
+          <!-- Vùng chứa các phần tử công việc -->
+          <div id="task-list-item-container" class="task-list-item-container"></div>
+
+          <!-- Khung trạng thái rỗng khi không có công việc nào (ẩn mặc định khi có việc) -->
+          <div id="task-empty-state-container" class="task-empty-state-container" style="display: none;">
+            <div class="task-empty-state-icon-box">
+              <svg class="task-empty-state-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <h3 class="task-empty-state-title">Chưa Có Công Việc Nào</h3>
+            <p class="task-empty-state-description">Danh sách hiện tại đang trống hoặc không có kết quả phù hợp với bộ
+              lọc
+              tìm kiếm.</p>
+          </div>
+
+        </section>
+      </div>
+
+      <!-- ========================================================
+           SECTION: THÊM CÔNG VIỆC (Add Task)
+           ======================================================== -->
+      <div class="content-section" id="section-add-task">
+        <section id="task-creation-section" class="task-creation-section" aria-label="Thêm công việc mới">
+          <div class="task-creation-card-wrapper">
+            <div class="task-creation-card-header">
+              <div class="task-creation-title-group">
+                <h1 class="task-creation-main-heading">Tạo Công Việc Mới</h1>
+                <p class="task-creation-description-text">Khởi tạo một tác vụ mới với tiêu đề, ngày hạn chót, chủ đề
+                  phân loại và mô tả chi tiết</p>
+              </div>
+              <div class="task-creation-method-badge">
+                <span class="task-http-method-name">POST</span>
+                <span class="task-http-endpoint-name">/todos</span>
+              </div>
+            </div>
+
+            <form id="task-creation-form" class="task-creation-form" autocomplete="off">
+              <!-- Hàng nhập liệu chính: Tiêu đề, Hạn chót, Chủ đề bo tròn và Nút thêm -->
+              <div class="task-creation-form-primary-row">
+                <div class="task-creation-input-wrapper task-creation-title-input-wrapper">
+                  <label for="task-creation-input-field" class="task-creation-accessible-label">Tiêu đề công
+                    việc</label>
+                  <input type="text" id="task-creation-input-field" name="task-creation-input-title"
+                    class="task-creation-input-field" placeholder="Nhập tiêu đề công việc cần làm..." required>
+                </div>
+
+                <!-- Ô chọn ngày hạn chót -->
+                <div class="task-creation-deadline-input-wrapper">
+                  <label for="task-creation-deadline-input-field" class="task-creation-accessible-label">Ngày hạn
+                    chót</label>
+                  <div class="task-creation-deadline-field-container">
+                    <svg class="task-field-icon-monochrome" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <input type="date" id="task-creation-deadline-input-field" name="task-creation-input-deadline"
+                      class="task-creation-deadline-input-field" title="Hạn chót hoàn thành">
+                  </div>
+                </div>
+
+                <!-- Ô chọn giờ / thời gian thực hiện -->
+                <div class="task-creation-time-input-wrapper">
+                  <label for="task-creation-time-input-field" class="task-creation-accessible-label">Giờ thực
+                    hiện</label>
+                  <div class="task-creation-time-field-container">
+                    <svg class="task-field-icon-monochrome" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <input type="time" id="task-creation-time-input-field" name="task-creation-input-time"
+                      class="task-creation-time-input-field" title="Giờ thực hiện tác vụ">
+                  </div>
+                </div>
+
+                <!-- Ô chọn chủ đề bo tròn thanh lịch với icon đen trắng tối giản -->
+                <div class="task-creation-topic-select-wrapper">
+                  <label for="task-creation-topic-select-field" class="task-creation-accessible-label">Chủ đề công
+                    việc</label>
+                  <div class="task-creation-topic-field-container">
+                    <svg class="task-field-icon-monochrome" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    <select id="task-creation-topic-select-field" class="task-creation-topic-select-field">
+                      <option value="Học tập">Học tập</option>
+                      <option value="Công việc">Công việc</option>
+                      <option value="Dự án">Dự án</option>
+                      <option value="Cá nhân">Cá nhân</option>
+                      <option value="Sức khỏe">Sức khỏe</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" id="task-creation-submit-button" class="task-primary-action-button">
+                  <svg class="task-button-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span class="task-button-text-label">Thêm Công Việc</span>
+                </button>
+              </div>
+
+              <!-- Ô nhập mô tả chi tiết công việc mới -->
+              <div class="task-creation-description-wrapper">
+                <label for="task-creation-description-input-field" class="task-creation-accessible-label">Mô tả công
+                  việc</label>
+                <textarea id="task-creation-description-input-field" class="task-creation-description-input-field"
+                  rows="2" placeholder="Nhập mô tả chi tiết cho công việc (không bắt buộc)..."></textarea>
+              </div>
+            </form>
+
+            <div id="task-creation-feedback-message" class="task-creation-feedback-message" aria-live="polite">
+              <!-- Thông báo phản hồi khi gửi yêu cầu -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========================================================
+           SECTION: THEO DÕI — ĐÃ HOÀN THÀNH
+           ======================================================== -->
+      <div class="content-section" id="section-tracking-completed">
+        <section class="tracking-section" aria-label="Danh sách đã hoàn thành">
+          <div class="section-page-header">
+            <div class="section-page-header-icon section-page-header-icon-completed">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h1 class="section-page-title">Đã Hoàn Thành</h1>
+              <p class="section-page-subtitle">Các công việc đã được đánh dấu hoàn thành</p>
+            </div>
+          </div>
+          <div class="tracking-task-list" id="tracking-completed-list">
+            <!-- JS sẽ render danh sách đã hoàn thành tại đây -->
+          </div>
+          <div class="task-empty-state-container" id="tracking-completed-empty" style="display:none;">
+            <div class="task-empty-state-icon-box">
+              <svg class="task-empty-state-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <h3 class="task-empty-state-title">Chưa có công việc hoàn thành</h3>
+            <p class="task-empty-state-description">Hoàn thành công việc để xem chúng ở đây.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========================================================
+           SECTION: THEO DÕI — CHƯA HOÀN THÀNH
+           ======================================================== -->
+      <div class="content-section" id="section-tracking-pending">
+        <section class="tracking-section" aria-label="Danh sách chưa hoàn thành">
+          <div class="section-page-header">
+            <div class="section-page-header-icon section-page-header-icon-pending">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h1 class="section-page-title">Chưa Hoàn Thành</h1>
+              <p class="section-page-subtitle">Các công việc đang cần hoàn thành</p>
+            </div>
+          </div>
+          <div class="tracking-task-list" id="tracking-pending-list">
+            <!-- JS sẽ render danh sách chưa hoàn thành tại đây -->
+          </div>
+          <div class="task-empty-state-container" id="tracking-pending-empty" style="display:none;">
+            <div class="task-empty-state-icon-box">
+              <svg class="task-empty-state-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 class="task-empty-state-title">Tất cả đã hoàn thành!</h3>
+            <p class="task-empty-state-description">Không còn công việc nào đang chờ xử lý.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ========================================================
+           SECTION: THÔNG BÁO (Notifications)
+           ======================================================== -->
+      <div class="content-section" id="section-notifications">
+        <section class="notifications-section" aria-label="Thông báo hệ thống">
+          <div class="section-page-header">
+            <div class="section-page-header-icon section-page-header-icon-notifications">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="section-page-title">Thông Báo</h1>
+              <p class="section-page-subtitle">Các cập nhật và hoạt động gần đây</p>
+            </div>
+          </div>
+          <div class="notifications-list" id="notifications-list">
+            <!-- JS sẽ render thông báo tại đây -->
+          </div>
+          <div class="task-empty-state-container" id="notifications-empty">
+            <div class="task-empty-state-icon-box">
+              <svg class="task-empty-state-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <h3 class="task-empty-state-title">Chưa Có Thông Báo</h3>
+            <p class="task-empty-state-description">Các hoạt động trên hệ thống sẽ được hiển thị tại đây.</p>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Hộp thoại Modal 1: Chỉnh sửa công việc (PATCH /todos/:id) -->
+  <aside id="task-edit-modal-dialog-backdrop" class="task-modal-backdrop-layer" aria-hidden="true">
+    <div id="task-edit-modal-window" class="task-modal-window-card" role="dialog" aria-modal="true"
+      aria-labelledby="task-edit-modal-heading">
+
+      <div class="task-modal-header-row">
+        <div class="task-modal-header-title-column">
+          <div class="task-modal-badge">PATCH /todos/:id</div>
+          <h2 id="task-edit-modal-heading" class="task-modal-heading-text">Chỉnh Sửa Thông Tin Công Việc</h2>
+        </div>
+        <button type="button" id="task-edit-modal-close-icon-button" class="task-modal-close-icon-button"
+          aria-label="Đóng cửa sổ chỉnh sửa">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="task-edit-modal-form" class="task-modal-form-body">
+        <div class="task-modal-input-group">
+          <label for="task-edit-modal-identifier-input" class="task-modal-input-label">MÃ ĐỊNH DANH (ID)</label>
+          <input type="text" id="task-edit-modal-identifier-input" class="task-modal-input-readonly" readonly>
+        </div>
+
+        <div class="task-modal-input-group">
+          <label for="task-edit-modal-title-input" class="task-modal-input-label">TIÊU ĐỀ CÔNG VIỆC</label>
+          <input type="text" id="task-edit-modal-title-input" class="task-modal-input-text"
+            placeholder="Nhập tiêu đề cập nhật..." required>
+        </div>
+
+        <div class="task-modal-input-row">
+          <div class="task-modal-input-group task-modal-input-group-third">
+            <label for="task-edit-modal-deadline-input-field" class="task-modal-input-label">HẠN CHÓT (DEADLINE)</label>
+            <input type="date" id="task-edit-modal-deadline-input-field" class="task-modal-input-date">
+          </div>
+
+          <div class="task-modal-input-group task-modal-input-group-third">
+            <label for="task-edit-modal-time-input-field" class="task-modal-input-label">GIỜ THỰC HIỆN (TIME)</label>
+            <input type="time" id="task-edit-modal-time-input-field" class="task-modal-input-time">
+          </div>
+
+          <div class="task-modal-input-group task-modal-input-group-third">
+            <label for="task-edit-modal-topic-input-field" class="task-modal-input-label">CHỦ ĐỀ (TOPIC)</label>
+            <select id="task-edit-modal-topic-input-field" class="task-modal-select-field">
+              <option value="Học tập">Học tập</option>
+              <option value="Công việc">Công việc</option>
+              <option value="Dự án">Dự án</option>
+              <option value="Cá nhân">Cá nhân</option>
+              <option value="Sức khỏe">Sức khỏe</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="task-modal-input-group">
+          <label for="task-edit-modal-description-textarea-field" class="task-modal-input-label">MÔ TẢ CHI TIẾT
+            (DESCRIPTION)</label>
+          <textarea id="task-edit-modal-description-textarea-field" class="task-modal-textarea-field" rows="3"
+            placeholder="Nhập mô tả chi tiết công việc..."></textarea>
+        </div>
+
+        <div class="task-modal-footer-row">
+          <button type="button" id="task-edit-modal-cancel-button" class="task-secondary-action-button">
+            Hủy Bỏ
+          </button>
+          <button type="submit" id="task-edit-modal-save-button" class="task-primary-action-button">
+            Lưu Thay Đổi
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </aside>
+
+  <!-- Hộp thoại Modal 2: Popup xác nhận xóa công việc (DELETE CONFIRMATION MODAL) -->
+  <aside id="task-delete-confirmation-modal-backdrop" class="task-modal-backdrop-layer" aria-hidden="true">
+    <div id="task-delete-confirmation-modal-window" class="task-modal-window-card task-delete-modal-window-card"
+      role="dialog" aria-modal="true" aria-labelledby="task-delete-confirmation-heading">
+
+      <div class="task-delete-modal-header-row">
+        <div class="task-delete-warning-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="task-delete-modal-title-column">
+          <h2 id="task-delete-confirmation-heading" class="task-delete-modal-heading-text">Xác Nhận Xóa Công Việc?</h2>
+          <span class="task-delete-modal-subheading-text">DELETE /todos/:id</span>
+        </div>
+        <button type="button" id="task-delete-confirmation-close-icon-button" class="task-modal-close-icon-button"
+          aria-label="Đóng hộp thoại">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="task-delete-modal-body">
+        <p class="task-delete-modal-description-paragraph">
+          Bạn có chắc chắn muốn xóa vĩnh viễn công việc này khỏi hệ thống không? Hành động này sẽ cập nhật cơ sở dữ liệu
+          và <strong>không thể hoàn tác</strong>.
+        </p>
+
+        <!-- Khung xem trước thông tin công việc sắp xóa -->
+        <div id="task-delete-confirmation-target-preview" class="task-delete-target-preview-box">
+          <div class="task-delete-preview-badge-row">
+            <span id="task-delete-target-identifier-badge" class="task-item-identifier-badge"></span>
+            <span id="task-delete-target-topic-badge" class="task-item-topic-badge"></span>
+          </div>
+          <h4 id="task-delete-target-title-text" class="task-delete-target-title-text"></h4>
+        </div>
+      </div>
+
+      <div class="task-delete-modal-footer-row">
+        <button type="button" id="task-delete-confirmation-cancel-button" class="task-secondary-action-button">
+          Không, Giữ Lại
+        </button>
+        <button type="button" id="task-delete-confirmation-confirm-button" class="task-danger-action-button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Chắc Chắn Xóa
+        </button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Thông báo Toast trạng thái góc màn hình -->
+  <div id="task-notification-toast-container" class="task-notification-toast-container" aria-live="polite">
+    <div id="task-notification-toast-element" class="task-notification-toast-element">
+      <span class="task-notification-toast-icon">✓</span>
+      <span id="task-notification-toast-message" class="task-notification-toast-message">Hệ thống đã sẵn sàng đồng bộ dữ
+        liệu.</span>
+    </div>
+  </div>
+
+  <!-- Chân trang cung cấp tài liệu API chuẩn kỹ thuật -->
+  <footer id="application-technical-footer" class="application-technical-footer">
+    <div class="application-footer-container">
+      <div class="application-footer-architecture-column">
+        <span class="application-footer-heading">CẤU TRÚC KẾT NỐI API</span>
+        <div class="application-footer-route-list">
+          <span class="application-footer-route-item"><code class="application-footer-code-tag">GET</code> /todos — Lấy
+            danh sách</span>
+          <span class="application-footer-route-item"><code class="application-footer-code-tag">POST</code> /todos — Tạo
+            mới (title, topic, deadline, time, description)</span>
+          <span class="application-footer-route-item"><code class="application-footer-code-tag">PATCH</code> /todos/:id
+            — Cập nhật (title, topic, deadline, time, description, done)</span>
+          <span class="application-footer-route-item"><code class="application-footer-code-tag">DELETE</code> /todos/:id
+            — Xóa (kèm xác nhận)</span>
+        </div>
+      </div>
+      <div class="application-footer-specification-column">
+        <span class="application-footer-heading">Tác giả: Giáp Văn Long</span>
+        <p class="application-footer-text-note">Design by Google Stitch</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Tệp Javascript xử lý logic nghiệp vụ và kết nối REST API -->
+  <script src="app.js"></script>
+
+  <!-- Sidebar Navigation Script -->
+  <script>
+    (function () {
+      // === SIDEBAR NAVIGATION ===
+      const sidebar = document.getElementById('application-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const toggleBtn = document.getElementById('sidebar-toggle-button');
+      const allNavLinks = document.querySelectorAll('.sidebar-nav-link[data-section], .sidebar-sub-nav-link[data-section]');
+      const allSections = document.querySelectorAll('.content-section');
+      const toggleParent = document.querySelector('.sidebar-nav-link-toggle');
+      const subNav = document.querySelector('.sidebar-sub-nav');
+
+      // Toggle sidebar on mobile
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          sidebar.classList.toggle('sidebar-open');
+          overlay.classList.toggle('sidebar-overlay-visible');
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('sidebar-open');
+          overlay.classList.remove('sidebar-overlay-visible');
+        });
+      }
+
+      // Toggle submenu (Theo dõi)
+      if (toggleParent) {
+        toggleParent.addEventListener('click', () => {
+          const parentItem = toggleParent.closest('.sidebar-nav-item-has-sub');
+          parentItem.classList.toggle('sidebar-sub-open');
+        });
+      }
+
+      // Section switching
+      allNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const targetSection = link.getAttribute('data-section');
+
+          // Remove active from all links
+          allNavLinks.forEach(l => l.classList.remove('sidebar-nav-link-active', 'sidebar-sub-nav-link-active'));
+          document.querySelectorAll('.sidebar-nav-link:not([data-section])').forEach(l => l.classList.remove('sidebar-nav-link-active'));
+
+          // Add active to clicked link
+          link.classList.add(link.classList.contains('sidebar-sub-nav-link') ? 'sidebar-sub-nav-link-active' : 'sidebar-nav-link-active');
+
+          // Show target section, hide others
+          allSections.forEach(s => s.classList.remove('content-section-active'));
+          const target = document.getElementById(targetSection);
+          if (target) target.classList.add('content-section-active');
+
+          // Close mobile sidebar
+          sidebar.classList.remove('sidebar-open');
+          overlay.classList.remove('sidebar-overlay-visible');
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

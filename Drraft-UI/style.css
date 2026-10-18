@@ -1,0 +1,642 @@
+/* ==================== CÀI ĐẶT CƠ BẢN & BIẾN MÀU SẮC ==================== */
+:root {
+    --background-primary-dark: #1b1b1b;
+    --background-card-dark: #131314;
+    --background-modal-dark: #28292a;
+    --background-input-dark: #37393b;
+    --background-hover-dark: #2c2d2e;
+    --background-button-create: #28292a;
+    --background-active-blue: #004a77;
+    
+    --text-primary-light: #e3e3e3;
+    --text-secondary-gray: #9aa0a6;
+    --text-accent-blue: #a8c7fa;
+    --brand-icon-blue: #4285f4;
+    
+    --border-subtle-dark: #2d2e30;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--background-primary-dark);
+    color: var(--text-primary-light);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+.application-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ==================== NÚT ICON DÙNG CHUNG ==================== */
+.icon-button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary-gray);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.icon-button:hover {
+    background-color: var(--background-hover-dark);
+    color: var(--text-primary-light);
+}
+
+/* ==================== THANH HEADER TRÊN CÙNG ==================== */
+.top-navigation-bar {
+    height: 64px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.application-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.brand-logo-circle {
+    width: 32px;
+    height: 32px;
+    background-color: var(--brand-icon-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+}
+
+.brand-logo-circle .material-symbols-outlined {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.brand-title-text {
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary-light);
+    letter-spacing: -0.5px;
+}
+
+.header-right-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-profile-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #00897b;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    cursor: pointer;
+    border: 2px solid #4285f4;
+}
+
+/* ==================== BỐ CỤC CHÍNH (SIDEBAR + BOARD) ==================== */
+.main-workspace-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ---------- THANH SIDEBAR BÊN TRÁI ---------- */
+.navigation-sidebar {
+    width: 256px;
+    padding-right: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.create-button-wrapper {
+    padding: 8px 0 16px 12px;
+}
+
+.create-task-primary-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--background-button-create);
+    color: var(--text-primary-light);
+    border: 1px solid #3c4043;
+    padding: 14px 24px 14px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.create-task-primary-button:hover {
+    background-color: #35363a;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.navigation-menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.navigation-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px 8px 24px;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    font-size: 14px;
+    color: var(--text-primary-light);
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.navigation-menu-item:hover {
+    background-color: var(--background-hover-dark);
+}
+
+.navigation-menu-item .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--text-secondary-gray);
+}
+
+.active-navigation-item {
+    background-color: var(--background-active-blue);
+    color: var(--text-accent-blue);
+    font-weight: 500;
+}
+
+.active-navigation-item:hover {
+    background-color: var(--background-active-blue);
+}
+
+.active-navigation-item .material-symbols-outlined {
+    color: var(--text-accent-blue);
+}
+
+/* Khu vực Lists ở Sidebar */
+.sidebar-lists-section {
+    margin-top: 20px;
+}
+
+.sidebar-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px 8px 24px;
+    color: var(--text-secondary-gray);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.sidebar-list-checkbox {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--text-secondary-gray);
+    border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.sidebar-list-checkbox:checked {
+    background-color: var(--text-primary-light);
+    border-color: var(--text-primary-light);
+}
+
+.sidebar-list-checkbox:checked::after {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    color: var(--background-primary-dark);
+    font-weight: bold;
+}
+
+.navigation-item-text {
+    cursor: pointer;
+    flex: 1;
+}
+
+.create-new-list-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px 10px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary-gray);
+    font-size: 14px;
+    font-weight: 500;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.create-new-list-button:hover {
+    background-color: var(--background-hover-dark);
+    color: var(--text-primary-light);
+}
+
+/* ---------- BẢNG CHỨA CÁC CỘT CÔNG VIỆC (TASK BOARD) ---------- */
+.task-board-container {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 8px 24px 24px 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.task-list-column-card {
+    background-color: var(--background-card-dark);
+    border: 1px solid var(--border-subtle-dark);
+    border-radius: 16px;
+    width: 360px;
+    min-width: 360px;
+    min-height: 540px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+}
+
+.column-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 12px 4px 20px;
+}
+
+.column-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary-light);
+}
+
+.inline-add-task-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-accent-blue);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.15s;
+}
+
+.inline-add-task-button:hover {
+    background-color: rgba(168, 199, 250, 0.08);
+}
+
+.inline-add-task-button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Danh sách các Task đang hoạt động */
+.active-tasks-list-container {
+    list-style: none;
+    overflow-y: auto;
+}
+
+.single-task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.single-task-item:hover {
+    background-color: var(--background-hover-dark);
+}
+
+.complete-task-radio-button {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--text-secondary-gray);
+    background: transparent;
+    cursor: pointer;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.complete-task-radio-button:hover {
+    border-color: var(--text-accent-blue);
+}
+
+.task-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-item-title {
+    font-size: 14px;
+    color: var(--text-primary-light);
+}
+
+.task-item-description {
+    font-size: 12px;
+    color: var(--text-secondary-gray);
+}
+
+.task-item-datetime-badge {
+    display: inline-block;
+    width: fit-content;
+    font-size: 11px;
+    color: var(--text-accent-blue);
+    border: 1px solid #444746;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-top: 4px;
+}
+
+/* Trạng thái trống (All tasks complete) */
+.empty-tasks-state-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.empty-state-illustration {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.illustration-check-icon {
+    font-size: 42px;
+    color: #81c995;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.illustration-person-icon {
+    font-size: 64px;
+    color: var(--text-accent-blue);
+}
+
+.empty-state-primary-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-primary-light);
+    margin-bottom: 8px;
+}
+
+.empty-state-secondary-text {
+    font-size: 13px;
+    color: var(--text-secondary-gray);
+}
+
+/* Phần Footer Completed ở mỗi cột */
+.completed-tasks-footer {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.toggle-completed-tasks-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary-gray);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.toggle-completed-tasks-button:hover {
+    background-color: var(--background-hover-dark);
+    color: var(--text-primary-light);
+}
+
+/* ==================== HỘP THOẠI TẠO TASK (MODAL DIALOG) ==================== */
+.modal-backdrop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Class dùng để ẩn/hiện Modal bằng JS */
+.hidden-modal {
+    display: none !important;
+}
+
+.modal-dialog-box {
+    background-color: var(--background-modal-dark);
+    width: 460px;
+    border-radius: 24px;
+    padding: 16px 24px 24px 24px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.create-task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-title-input-wrapper {
+    padding-left: 36px;
+}
+
+.task-title-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--text-accent-blue);
+    color: var(--text-primary-light);
+    font-size: 22px;
+    padding: 6px 0;
+    outline: none;
+}
+
+.task-title-input::placeholder {
+    color: var(--text-secondary-gray);
+}
+
+.form-row-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.form-row-icon {
+    color: var(--text-secondary-gray);
+    font-size: 20px;
+    margin-top: 8px;
+}
+
+.datetime-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.date-and-time-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-filled-input,
+.custom-filled-select,
+.custom-filled-textarea {
+    background-color: var(--background-input-dark);
+    border: none;
+    border-radius: 6px;
+    color: var(--text-primary-light);
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+}
+
+.custom-filled-input:focus,
+.custom-filled-select:focus,
+.custom-filled-textarea:focus {
+    box-shadow: 0 0 0 2px var(--text-accent-blue);
+}
+
+.date-input {
+    width: 120px;
+}
+
+.time-input {
+    width: 140px;
+}
+
+.all-day-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-primary-light);
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.custom-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--text-accent-blue);
+    cursor: pointer;
+}
+
+.custom-filled-select {
+    cursor: pointer;
+    min-width: 160px;
+}
+
+.full-width-control {
+    flex: 1;
+}
+
+.custom-filled-textarea {
+    width: 100%;
+    resize: none;
+}
+
+.custom-filled-textarea::placeholder {
+    color: var(--text-secondary-gray);
+}
+
+.modal-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.save-task-submit-button {
+    background-color: var(--background-input-dark);
+    color: var(--text-secondary-gray);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.save-task-submit-button:hover {
+    background-color: var(--text-accent-blue);
+    color: #041e49;
+}
