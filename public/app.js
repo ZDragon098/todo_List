@@ -1,3 +1,18 @@
+// Hàm hỗ trợ chuyển File sang chuỗi Base64
+// function fileToBase64(file) {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
+// }
+
+
+
+const list = document.getElementById("task-list-item-container");
+const emptyState = document.getElementById("task-empty-state-container");
+
 fetch("/todos")
   .then(res => res.json())
   .then(data => console.log(data))
@@ -27,15 +42,147 @@ function showToast(message = "Tạo thành công", duration = 1500) {
   }, duration);
 }
 
+function updateMetrics(todoList) {
+  const todoTotal = todoList.length;
+  const todoDone = todoList.filter((t) => t.done).length;
+  const todoPending = todoTotal - todoDone;
+  const percent = todoTotal > 0 ? Math.round((todoDone / todoTotal) * 100) : 0;
+
+  //Cập nhật các thông số lớn
+  document.getElementById("task-summary-total-count").textContent = String(todoTotal).padStart(2, "0");
+  document.getElementById("task-summary-pending-count").textContent = String(todoPending).padStart(2, "0");
+  document.getElementById("task-summary-completed-count").textContent = String(todoDone).padStart(2, "0");
+
+  // Cập nhật số trên các nút lọc
+  document.getElementById("task-filter-counter-all").textContent = todoTotal;
+  document.getElementById("task-filter-counter-pending").textContent = todoPending;
+  document.getElementById("task-filter-counter-completed").textContent = todoDone;
+
+  // Cập nhật thanh tiến độ:
+  document.getElementById("task-progress-percentage-label").textContent = `${percent}%`;
+  document.getElementById("task-progress-fill-bar").style.width = `${percent}%`;
+}
+
+//Sidebar - Theo dõi
+trackingCompletedList = document.getElementById("tracking-completed-list")
+trackingPendingList = document.getElementById("tracking-pending-list")
+trackingCompletedEmpty = document.getElementById("tracking-completed-empty")
+trackingPendingEmpty = document.getElementById("tracking-pending-empty")
+
+function renderTrackingList(todos) {
+  const completedTodos = todos.filter((t) => t.done);
+  const pendingTodos = todos.filter((t) => !t.done);
+  //Sidebar - Theo dõi - Đã hoàn thành
+  if (completedTodos.length === 0) {
+    trackingCompletedList.innerHTML = "";
+    trackingCompletedEmpty.style.display = "block";
+  }
+  else {
+    trackingCompletedEmpty.style.display = "none";
+    trackingCompletedList.innerHTML = completedTodos.map(todo =>
+      `<article class="task-item-card task-item-card-completed">
+          <div class="task-item-information-column">
+            <div class="task-item-metadata-row">
+              <span class="task-item-identifier-badge">ID: #${String(todo.id).padStart(2, "0")}</span>
+              <span class="task-item-status-tag task-item-status-tag-completed">ĐÃ HOÀN THÀNH</span>
+              <span class="task-item-topic-badge">${todo.topic || "Chưa phân loại"}</span>
+            </div>
+            <h3 class="task-item-title-text" style ="text-decoration: none" >${todo.title}</h3>
+          </div>
+        </article>`
+    ).join("");
+  }
+
+  //Sidebar - Theo dõi - Chưa hoàn thành
+  if (pendingTodos.length === 0) {
+    trackingPendingList.innerHTML = "";
+    trackingPendingEmpty.style.display = "block";
+  }
+  else {
+    trackingPendingEmpty.style.display = "none";
+    trackingPendingList.innerHTML = pendingTodos.map(todo =>
+      `<article class="task-item-card task-item-card-pending">
+          <div class="task-item-information-column">
+            <div class="task-item-metadata-row">
+              <span class="task-item-identifier-badge">ID: #${String(todo.id).padStart(2, "0")}</span>
+              <span class="task-item-status-tag task-item-status-tag-pending">CHƯA HOÀN THÀNH</span>
+              <span class="task-item-topic-badge">${todo.topic || "Chưa phân loại"}</span>
+            </div>
+            <h3 class="task-item-title-text">${todo.title}</h3>
+          </div>
+        </article>`
+    ).join("");
+  }
+}
+
+// Chức năng sắp xếp theo lựa chọn
+const sortSelect = document.getElementById("task-sorting-select-field");
+const sortCaption = document.getElementById("task-list-current-sort-caption");
+
+function changeMiliSecond(card) {
+  const deadline = card.getAttribute("data-task-deadline");
+  const time = card.getAttribute("data-task-time") || "23:59";
+  return new Date(`${deadline}T${time}`).getTime();
+}
+
+function sortTodos() {
+  const sortValue = sortSelect.value;
+
+  const cards = Array.from(list.querySelectorAll(".task-item-card"));
+  //cardList = cards.map(t => t.done);
+  cards.sort((a, b) => {
+    const statusA = a.getAttribute("data-task-status");
+    const statusB = b.getAttribute("data-task-status");
+    if (statusA != statusB) return statusA == "completed" ? 1 : -1;
+
+    const idA = Number(a.getAttribute("data-task-identifier"));
+    const idB = Number(b.getAttribute("data-task-identifier"));
+    if (sortValue == "identifier-descending") {
+      return idB - idA;
+    }
+    else if (sortValue == "identifier-ascending") {
+      return idA - idB;
+    }
+    else if(sortValue === "deadline-approaching") {
+      return changeMiliSecond(a) - changeMiliSecond(b);
+    }
+  });
+
+  cards.forEach((card) => list.appendChild(card))
+
+  const captionMap = {
+    "identifier-descending": "SẮP XẾP: THEO MÃ ID GIẢM DẦN",
+    "identifier-ascending": "SẮP XẾP: THEO MÃ ID TĂNG DẦN",
+    "deadline-approaching": "SẮP XẾP: SẮP ĐẾN HẠN TRƯỚC",
+  }
+  if (sortCaption) {
+    sortCaption.textContent = captionMap[sortValue];
+  }
+}
+sortSelect.addEventListener("change", sortTodos);
+
 
 // GET todos
-const list = document.getElementById("task-list-item-container");
 async function loadTodos() {
   try {
     // Gửi request đến server để lấy danh sách todos
     const res = await fetch("/todos");
+    // if (res.length == 0) {
+    //   list.innerHTML = " ";
+    //   emptyState.style.display = "block";
+    //   return;
+    // }
+    // emptyState.style.display = "none";
     // Chuyển đổi dữ liệu từ JSON sang đối tượng JavaScript
     const todos = await res.json();
+    if (todos.length == 0) {
+      list.innerHTML = " ";
+      emptyState.style.display = "block";
+      return;
+    }
+    emptyState.style.display = "none";
+    updateMetrics(todos);
+    renderTrackingList(todos);
     // Tạo HTML từ danh sách todos
     // const html = todos.map(todo => `<article><h2>${todo.title} - ${todo.deadline} - ${todo.time} - ${todo.description} - ${todo.topic} - ${todo.done}</h2></article>`).join("");
     const html = todos.map(todo => {
@@ -103,6 +250,7 @@ async function loadTodos() {
     }).join("");
     // Hiển thị danh sách todos trên trang web
     list.innerHTML = html;
+    sortTodos();
   }
   catch (err) {
     console.error("Lỗi khi tải danh sách ", err);
@@ -112,6 +260,8 @@ loadTodos();
 
 // POST todos/:id
 async function createTodo() {
+  // const fileInput = document.getElementById("task-creation-file-input");
+  // const file = fileInput.files[0];
   const res = await fetch("/todos", {
     method: "POST",
     headers: {
@@ -140,16 +290,129 @@ form.addEventListener("submit", (e) => {
 });
 
 
-
-
-
-
 //PATCH todos/:id
 
+// Tích chọn checkbox
+list.addEventListener("change", async (e) => {
+  const checkbox = e.target;
+  const card = checkbox.closest(".task-item-card");
+  const id = card.getAttribute("data-task-identifier");
+  const isDone = checkbox.checked;
+
+  try {
+    const res = await fetch(`/todos/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ done: isDone })
+    });
+    await loadTodos();
+    showToast(isDone ? "Đã hoàn thành" : "Chuyển về trạng thái đang làm", 1500);
+  }
+  catch (err) {
+    console.error("Lỗi khi đổi trạng thái", err);
+    showToast(
+      "Lỗi khi thay đổi trạng thái", 1500
+    );
+  }
+});
+// Sủa thông tin qua Modal sửa
+// Lấy các phần tử của Modal Chỉnh sửa từ index.html
+const editModalBackdrop = document.getElementById("task-edit-modal-dialog-backdrop");
+const editModalForm = document.getElementById("task-edit-modal-form");
+const editCloseBtn = document.getElementById("task-edit-modal-close-icon-button");
+const editCancelBtn = document.getElementById("task-edit-modal-cancel-button");
+
+// Các ô input bên trong Modal Chỉnh sửa
+const editIdInput = document.getElementById("task-edit-modal-identifier-input");
+const editTitleInput = document.getElementById("task-edit-modal-title-input");
+const editDeadlineInput = document.getElementById("task-edit-modal-deadline-input-field");
+const editTimeInput = document.getElementById("task-edit-modal-time-input-field");
+const editTopicInput = document.getElementById("task-edit-modal-topic-input-field");
+const editDescInput = document.getElementById("task-edit-modal-description-textarea-field");
+
+// Biến lưu ID của công việc đang được mở để sửa
+let todoIdToEdit = null;
+
+// Hàm mở Modal Sửa và điền sẵn dữ liệu hiện tại của công việc vào các ô input
+function openEditModal(todoData) {
+  todoIdToEdit = todoData.id;
+  editIdInput.value = `#${String(todoData.id).padStart(2, "0")}`;
+  editTitleInput.value = todoData.title || "";
+  editDeadlineInput.value = todoData.deadline || "";
+  editTimeInput.value = todoData.time || "";
+  editTopicInput.value = todoData.topic || "";
+  editDescInput.value = todoData.description || "";
+
+  editModalBackdrop.classList.add("is-visible");
+}
+
+// Hàm đóng Modal Sửa
+function closeEditModal() {
+  todoIdToEdit = null;
+  editModalBackdrop.classList.remove("is-visible");
+}
 
 
+// Lắng nghe sự kiện bấm nút "Sửa" trên từng thẻ công việc
+list.addEventListener("click", (e) => {
+  const editBtn = e.target.closest(".task-item-edit-action-button");
+  if (!editBtn) return;
+  // Lấy thẻ <article> chứa công việc vừa bấm
+  const card = editBtn.closest(".task-item-card");
 
+  // Đọc lại các thông tin hiện tại của công việc từ thẻ <article>
+  const descElement = card.querySelector(".task-item-description-text");
+  const todoData = {
+    id: card.getAttribute("data-task-identifier"),
+    title: card.querySelector(".task-item-title-text").textContent,
+    topic: card.getAttribute("data-task-topic"),
+    deadline: card.getAttribute("data-task-deadline"),
+    time: card.getAttribute("data-task-time"),
+    description: descElement ? descElement.textContent : ""
+  };
+  openEditModal(todoData)
+})
+// Lắng nghe sự kiện bấm nút "Lưu Thay Đổi" (submit form sửa)
+editModalForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Ngăn trang web tự tải lại
+    try {
+      const updatedData = {
+          title: editTitleInput.value.trim(),
+          deadline: editDeadlineInput.value,
+          time: editTimeInput.value,
+          topic: editTopicInput.value,
+          description: editDescInput.value.trim()
+      };
 
+      const res = await fetch(`/todos/${todoIdToEdit}`, {
+          method: "PATCH",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(updatedData)
+      });
+
+      // Đóng modal, tải lại danh sách và hiện thông báo 1 giây
+      closeEditModal();
+      await loadTodos();
+      showToast("Cập nhật thành công!", 1500);
+
+    } catch (err) {
+        console.error("Lỗi khi cập nhật công việc:", err);
+        showToast("Lỗi khi cập nhật!", 1500);
+    }
+});
+
+// Đóng Modal Sửa khi bấm nút "Hủy Bỏ", nút "X" hoặc bấm ra ngoài vùng nền tối
+editCancelBtn.addEventListener("click", closeEditModal);
+editCloseBtn.addEventListener("click", closeEditModal);
+editModalBackdrop.addEventListener("click", (e) => {
+    if (e.target === editModalBackdrop) {
+        closeEditModal();
+    }
+});
 
 // DELETE todos/:id
 
@@ -174,19 +437,20 @@ function openDeleteModal(id, title, topic){
   deletePreviewTitle.textContent = `Tiêu đề: ${title}`;
 
   //Hiển thị modal bằng class 'is-visible' trong style.css
-  deleteModalBackdrop.classList.add('is-visible');
+  deleteModalBackdrop.classList.add('is-visible'); //classList.add(): Thêm class CSS vào phần tử HTML
   deleteModalBackdrop.setAttribute("aria-hidden", "false");
 }
 
 function closeDeleteModal() {
   todoIdToDelete = null;
-  deleteModalBackdrop.classList.remove("is-visible");
-  deleteModalBackdrop.setAttribute("aria-hidden", "true");
+  deleteModalBackdrop.classList.remove("is-visible"); //classList.remove(): xóa class CSS của phần tử HTML để modal bị ẩn
+  deleteModalBackdrop.setAttribute("aria-hidden", "true");//
 }
 
 // Mở Modal Xóa - Click vào bút Xóa
 list.addEventListener("click", (e) => {
   const deleteBtn = e.target.closest(".task-item-delete-action-button");
+  if (!deleteBtn) return;
 
   const card = deleteBtn.closest(".task-item-card");
   const id = card.getAttribute("data-task-identifier");
@@ -209,13 +473,60 @@ deleteModalBackdrop.addEventListener("click", (e) => {
 deleteConfirmBtn.addEventListener("click", async () => {
   if (!todoIdToDelete) return;
   try {
-    const res = await fetch(`todos/${todoIdToDelete}`, { method: "DELETE" });
+    const res = await fetch(`/todos/${todoIdToDelete}`, { method: "DELETE" });
     closeDeleteModal();
+    await loadTodos();
     showToast("Xóa thành công",1500);
   }
   catch(err) {
     console.error("Lỗi khi xóa", err);
     showToast("Lỗi khi xóa", 1500);
   }
-  loadTodos();
 });
+
+// Lọc trạng thái All, Pending, Complete
+const filterAllBtn = document.getElementById("task-filter-all-button");
+const filterPendingBtn = document.getElementById("task-filter-pending-button");
+const filterCompletedBtn = document.getElementById("task-filter-completed-button");
+const filterButtons = [filterAllBtn, filterPendingBtn, filterCompletedBtn];
+
+function filterStatus(status) {
+  filterButtons.forEach(btn => {
+    btn.classList.remove("task-filter-option-button-active");
+    btn.setAttribute("aria-selected", "false");
+  });
+
+  // if (status == "all" || status == "pending" || status == "completed") {
+  //   filterAllBtn.classList.add("task-filter-option-button-active");
+  //   filterAllBtn.setAttribute("aria-selected", "true");
+  // }
+  if (status === "all") {
+      filterAllBtn.classList.add("task-filter-option-button-active");
+      filterAllBtn.setAttribute("aria-selected", "true");
+  } else if (status === "pending") {
+      filterPendingBtn.classList.add("task-filter-option-button-active");
+      filterPendingBtn.setAttribute("aria-selected", "true");
+  } else if (status === "completed") {
+      filterCompletedBtn.classList.add("task-filter-option-button-active");
+      filterCompletedBtn.setAttribute("aria-selected", "true");
+  }
+
+  const cards = list.querySelectorAll(".task-item-card");
+  let cnt = 0;
+  cards.forEach(card => {
+    const cardStatus = card.getAttribute("data-task-status");
+    if (status === "all" || cardStatus === status) {
+      card.style.display = "flex";
+      cnt++;
+    }
+    else {
+      card.style.display = "none";
+    }
+  });
+  //emptyState.style.display = cnt > 0 ? "block" : "none";
+  // loadTodos();
+}
+
+filterAllBtn.addEventListener("click", () => filterStatus("all"))
+filterPendingBtn.addEventListener("click", () => filterStatus("pending"))
+filterCompletedBtn.addEventListener("click",() => filterStatus("completed"))

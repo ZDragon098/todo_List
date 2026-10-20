@@ -159,7 +159,7 @@ body {
 
 body {
   background-color: var(--color-paper-background);
-  background-image: 
+  background-image:
     radial-gradient(circle at 8% 8%, oklch(92% 0.06 280 / 0.6) 0px, transparent 40%),
     radial-gradient(circle at 92% 14%, oklch(93% 0.07 65 / 0.55) 0px, transparent 45%),
     radial-gradient(circle at 50% 92%, oklch(93% 0.06 155 / 0.5) 0px, transparent 40%),
@@ -175,7 +175,7 @@ body {
 }
 
 body[data-application-theme="dark"] {
-  background-image: 
+  background-image:
     radial-gradient(circle at 8% 8%, oklch(24% 0.08 280 / 0.45) 0px, transparent 40%),
     radial-gradient(circle at 92% 14%, oklch(26% 0.09 65 / 0.35) 0px, transparent 45%),
     radial-gradient(circle at 50% 92%, oklch(24% 0.08 155 / 0.35) 0px, transparent 40%),
@@ -274,7 +274,7 @@ textarea {
   font-weight: 700;
   letter-spacing: -0.01em;
   background: linear-gradient(135deg, var(--color-ink-primary), var(--color-accent-indigo));
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
 }
@@ -553,7 +553,7 @@ body[data-application-theme="dark"] .sidebar-sub-nav-link-active {
   font-weight: 700;
   letter-spacing: -0.01em;
   background: linear-gradient(135deg, var(--color-ink-primary), var(--color-accent-indigo));
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
   overflow: hidden;
@@ -946,7 +946,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
   font-size: 14px;
   font-weight: 700;
   background: linear-gradient(135deg, var(--color-accent-indigo), var(--color-accent-emerald));
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1287,6 +1287,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
    PHẦN 3: THANH CÔNG CỤ TÌM KIẾM, LỌC & SẮP XẾP (TOOLBAR, FILTERS & SORTING)
    ========================================================================== */
 .task-toolbar-control-section {
+padding-top: 30px;
   display: flex;
   flex-direction: column;
 }
@@ -1300,6 +1301,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
 }
 
 .task-search-input-container {
+
   flex: 1.5;
   min-width: 200px;
   position: relative;
@@ -1406,7 +1408,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
 
 .task-sorting-select-field {
   height: 40px;
-  padding: 0 16px 0 36px;
+  padding: 0 25px 0 30px;
   background-color: var(--color-paper-elevated);
   border: 1px solid var(--color-border-hairline);
   border-radius: var(--border-radius-pill);
@@ -1516,6 +1518,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
    PHẦN 4: DANH SÁCH CÔNG VIỆC (TASK LIST DISPLAY)
    ========================================================================== */
 .task-display-list-section {
+    padding-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 16px;
