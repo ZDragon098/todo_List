@@ -210,10 +210,10 @@ Mỗi đối tượng Todo được lưu trữ với định dạng:
 {
   id: number;           // Khóa chính tự động tăng
   title: string;        // Tiêu đề công việc (bắt buộc)
-  description?: string;  // Mô tả chi tiết
-  topic?: string;        // Chủ đề / Danh mục (Ví dụ: Học tập, Công việc, ...)
-  deadline?: string;     // Ngày đến hạn (Định dạng YYYY-MM-DD)
-  time?: string;         // Giờ đến hạn (Định dạng HH:mm)
+  description: string;  // Mô tả chi tiết
+  topic: string;        // Chủ đề / Danh mục (Ví dụ: Học tập, Công việc, ...)
+  deadline: string;     // Ngày đến hạn (Định dạng YYYY-MM-DD)
+  time: string;         // Giờ đến hạn (Định dạng HH:mm)
   done: boolean;        // Trạng thái hoàn thành (mặc định: false)
 }
 ```
