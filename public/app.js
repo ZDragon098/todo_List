@@ -143,7 +143,7 @@ function sortTodos() {
     else if (sortValue == "identifier-ascending") {
       return idA - idB;
     }
-    else if(sortValue === "deadline-approaching") {
+    else if (sortValue === "deadline-approaching") {
       return changeMiliSecond(a) - changeMiliSecond(b);
     }
   });
@@ -376,42 +376,42 @@ list.addEventListener("click", (e) => {
 })
 // Lắng nghe sự kiện bấm nút "Lưu Thay Đổi" (submit form sửa)
 editModalForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Ngăn trang web tự tải lại
-    try {
-      const updatedData = {
-          title: editTitleInput.value.trim(),
-          deadline: editDeadlineInput.value,
-          time: editTimeInput.value,
-          topic: editTopicInput.value,
-          description: editDescInput.value.trim()
-      };
+  e.preventDefault(); // Ngăn trang web tự tải lại
+  try {
+    const updatedData = {
+      title: editTitleInput.value.trim(),
+      deadline: editDeadlineInput.value,
+      time: editTimeInput.value,
+      topic: editTopicInput.value,
+      description: editDescInput.value.trim()
+    };
 
-      const res = await fetch(`/todos/${todoIdToEdit}`, {
-          method: "PATCH",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify(updatedData)
-      });
+    const res = await fetch(`/todos/${todoIdToEdit}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedData)
+    });
 
-      // Đóng modal, tải lại danh sách và hiện thông báo 1 giây
-      closeEditModal();
-      await loadTodos();
-      showToast("Cập nhật thành công!", 1500);
+    // Đóng modal, tải lại danh sách và hiện thông báo 1 giây
+    closeEditModal();
+    await loadTodos();
+    showToast("Cập nhật thành công!", 1500);
 
-    } catch (err) {
-        console.error("Lỗi khi cập nhật công việc:", err);
-        showToast("Lỗi khi cập nhật!", 1500);
-    }
+  } catch (err) {
+    console.error("Lỗi khi cập nhật công việc:", err);
+    showToast("Lỗi khi cập nhật!", 1500);
+  }
 });
 
 // Đóng Modal Sửa khi bấm nút "Hủy Bỏ", nút "X" hoặc bấm ra ngoài vùng nền tối
 editCancelBtn.addEventListener("click", closeEditModal);
 editCloseBtn.addEventListener("click", closeEditModal);
 editModalBackdrop.addEventListener("click", (e) => {
-    if (e.target === editModalBackdrop) {
-        closeEditModal();
-    }
+  if (e.target === editModalBackdrop) {
+    closeEditModal();
+  }
 });
 
 // DELETE todos/:id
@@ -423,12 +423,12 @@ const deleteCancelBtn = document.getElementById("task-delete-confirmation-cancel
 const deleteConfirmBtn = document.getElementById("task-delete-confirmation-confirm-button");
 
 // Tạo các biến hiển thị thông tin sẽ xóa
-const  deletePreviewId  = document.getElementById("task-delete-target-identifier-badge");
+const deletePreviewId = document.getElementById("task-delete-target-identifier-badge");
 const deletePreviewTopic = document.getElementById("task-delete-target-topic-badge");
 const deletePreviewTitle = document.getElementById("task-delete-target-title-text");
 
 let todoIdToDelete = null;
-function openDeleteModal(id, title, topic){
+function openDeleteModal(id, title, topic) {
   todoIdToDelete = id;
   //testContent: là một thuộc tính trong JS, nó lấy ra hoặc thay đổi nội dung chữ nằm bên trong 1 thẻ HTML
   //padStart(x, "y"): là điền thêm "y" vào nếu có ít hơn x chữ số
@@ -476,9 +476,9 @@ deleteConfirmBtn.addEventListener("click", async () => {
     const res = await fetch(`/todos/${todoIdToDelete}`, { method: "DELETE" });
     closeDeleteModal();
     await loadTodos();
-    showToast("Xóa thành công",1500);
+    showToast("Xóa thành công", 1500);
   }
-  catch(err) {
+  catch (err) {
     console.error("Lỗi khi xóa", err);
     showToast("Lỗi khi xóa", 1500);
   }
@@ -501,14 +501,14 @@ function filterStatus(status) {
   //   filterAllBtn.setAttribute("aria-selected", "true");
   // }
   if (status === "all") {
-      filterAllBtn.classList.add("task-filter-option-button-active");
-      filterAllBtn.setAttribute("aria-selected", "true");
+    filterAllBtn.classList.add("task-filter-option-button-active");
+    filterAllBtn.setAttribute("aria-selected", "true");
   } else if (status === "pending") {
-      filterPendingBtn.classList.add("task-filter-option-button-active");
-      filterPendingBtn.setAttribute("aria-selected", "true");
+    filterPendingBtn.classList.add("task-filter-option-button-active");
+    filterPendingBtn.setAttribute("aria-selected", "true");
   } else if (status === "completed") {
-      filterCompletedBtn.classList.add("task-filter-option-button-active");
-      filterCompletedBtn.setAttribute("aria-selected", "true");
+    filterCompletedBtn.classList.add("task-filter-option-button-active");
+    filterCompletedBtn.setAttribute("aria-selected", "true");
   }
 
   const cards = list.querySelectorAll(".task-item-card");
@@ -529,4 +529,209 @@ function filterStatus(status) {
 
 filterAllBtn.addEventListener("click", () => filterStatus("all"))
 filterPendingBtn.addEventListener("click", () => filterStatus("pending"))
-filterCompletedBtn.addEventListener("click",() => filterStatus("completed"))
+filterCompletedBtn.addEventListener("click", () => filterStatus("completed"))
+
+
+// TÌM KIẾM CÔNG VIỆC (Search Tasks)
+const searchInput = document.getElementById("task-search-input-field");
+const searchClearBtn = document.getElementById("task-search-clear-button");
+const searchResultInfo = document.getElementById("task-search-result-info");
+const searchResultText = document.getElementById("task-search-result-text");
+
+let searchDebounceTimer = null;
+
+// Hàm escape ký tự đặc biệt cho RegExp
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Hàm highlight text khớp với từ khóa tìm kiếm
+function highlightText(text, keyword) {
+  if (!keyword) return text;
+  const escaped = escapeRegExp(keyword);
+  const regex = new RegExp(`(${escaped})`, "gi");
+  return text.replace(regex, `<mark class="task-search-highlight">$1</mark>`);
+}
+
+// Hàm tìm kiếm chính
+function searchTasks(keyword) {
+  const trimmed = keyword.trim().toLowerCase();
+  const cards = list.querySelectorAll(".task-item-card");
+
+  // Hiện/ẩn nút xóa tìm kiếm
+  searchClearBtn.style.display = keyword.trim() ? "flex" : "none";
+
+  // Nếu ô tìm kiếm trống → hiện tất cả, xóa highlight, ẩn info
+  if (!trimmed) {
+    cards.forEach(card => {
+      card.style.display = "flex";
+      // Xóa highlight
+      restoreOriginalText(card);
+    });
+    searchResultInfo.style.display = "none";
+    // Reset lại filter đang active
+    const activeFilter = document.querySelector(".task-filter-option-button-active");
+    if (activeFilter) {
+      if (activeFilter.id === "task-filter-pending-button") filterStatus("pending");
+      else if (activeFilter.id === "task-filter-completed-button") filterStatus("completed");
+      else filterStatus("all");
+    }
+    return;
+  }
+
+  let matchCount = 0;
+
+  cards.forEach(card => {
+    const id = card.getAttribute("data-task-identifier") || "";
+    const topic = card.getAttribute("data-task-topic") || "";
+    const titleEl = card.querySelector(".task-item-title-text");
+    const descEl = card.querySelector(".task-item-description-text");
+    const title = titleEl ? titleEl.textContent : "";
+    const description = descEl ? descEl.textContent : "";
+
+    // Tìm trong: ID, tiêu đề, mô tả, chủ đề
+    const searchableText = `${id} ${title} ${description} ${topic}`.toLowerCase();
+    const isMatch = searchableText.includes(trimmed);
+
+    if (isMatch) {
+      card.style.display = "flex";
+      matchCount++;
+      // Highlight các vùng khớp
+      if (titleEl) {
+        titleEl.innerHTML = highlightText(title, keyword.trim());
+      }
+      if (descEl) {
+        descEl.innerHTML = highlightText(description, keyword.trim());
+      }
+    } else {
+      card.style.display = "none";
+      // Xóa highlight cho card ẩn
+      restoreOriginalText(card);
+    }
+  });
+
+  // Hiển thị thông tin kết quả
+  searchResultInfo.style.display = "block";
+  if (matchCount > 0) {
+    searchResultText.textContent = `Tìm thấy ${matchCount} kết quả cho "${keyword.trim()}"`;
+    searchResultInfo.style.color = "var(--color-accent-indigo)";
+    searchResultInfo.style.background = "var(--color-accent-indigo-subtle)";
+    searchResultInfo.style.borderColor = "var(--color-accent-indigo-border)";
+  } else {
+    searchResultText.textContent = `Không tìm thấy kết quả nào cho "${keyword.trim()}"`;
+    searchResultInfo.style.color = "var(--color-accent-rose-text)";
+    searchResultInfo.style.background = "var(--color-accent-rose-subtle)";
+    searchResultInfo.style.borderColor = "var(--color-accent-rose-border)";
+  }
+}
+
+// Hàm khôi phục lại text gốc (xóa highlight)
+function restoreOriginalText(card) {
+  const titleEl = card.querySelector(".task-item-title-text");
+  const descEl = card.querySelector(".task-item-description-text");
+  if (titleEl) titleEl.innerHTML = titleEl.textContent;
+  if (descEl) descEl.innerHTML = descEl.textContent;
+}
+
+// Lắng nghe sự kiện nhập liệu với debounce 250ms
+searchInput.addEventListener("input", (e) => {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    searchTasks(e.target.value);
+  }, 250);
+});
+
+// Nút xóa tìm kiếm
+searchClearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchClearBtn.style.display = "none";
+  searchResultInfo.style.display = "none";
+  const cards = list.querySelectorAll(".task-item-card");
+  cards.forEach(card => {
+    card.style.display = "flex";
+    restoreOriginalText(card);
+  });
+  searchInput.focus();
+  // Reset lại filter
+  filterStatus("all");
+});
+
+// Phím tắt: Escape để xóa tìm kiếm
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    searchClearBtn.click();
+  }
+});
+
+// ============================================================
+// CHẾ ĐỘ SÁNG / TỐI (DARK MODE)
+// ============================================================
+const bodyElement = document.getElementById("application-root-body") || document.body;
+const themeToggleBtn = document.getElementById("task-theme-toggle-button");
+const themeToggleBtnMobile = document.getElementById("task-theme-toggle-button-mobile");
+const themeToggleLabel = document.getElementById("task-theme-toggle-text-label");
+
+function applyTheme(theme, showNotification = false) {
+  bodyElement.setAttribute("data-application-theme", theme);
+  document.documentElement.setAttribute("data-theme", theme);
+  document.documentElement.setAttribute("data-application-theme", theme);
+  localStorage.setItem("todo_app_theme", theme);
+
+  if (themeToggleLabel) {
+    themeToggleLabel.textContent = theme === "dark" ? "Chế độ sáng" : "Chế độ tối";
+  }
+
+  if (showNotification) {
+    showToast(theme === "dark" ? "Đã bật chế độ tối" : "Đã bật chế độ sáng", 1200);
+  }
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("todo_app_theme");
+  if (savedTheme) {
+    applyTheme(savedTheme, false);
+  } else {
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDark ? "dark" : "light", false);
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = bodyElement.getAttribute("data-application-theme") || "light";
+  const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+  // Kích hoạt animation xoay icon
+  const iconWrappers = document.querySelectorAll(".task-theme-icon-wrapper");
+  iconWrappers.forEach(wrapper => {
+    wrapper.classList.remove("is-spinning");
+    // Force reflow để restart animation
+    void wrapper.offsetWidth;
+    wrapper.classList.add("is-spinning");
+    wrapper.addEventListener("animationend", () => {
+      wrapper.classList.remove("is-spinning");
+    }, { once: true });
+  });
+
+  applyTheme(nextTheme, true);
+}
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", toggleTheme);
+}
+
+if (themeToggleBtnMobile) {
+  themeToggleBtnMobile.addEventListener("click", toggleTheme);
+}
+
+// Tự động thích ứng khi theme hệ điều hành thay đổi (nếu người dùng chưa chọn thủ công)
+if (window.matchMedia) {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    if (!localStorage.getItem("todo_app_theme")) {
+      applyTheme(e.matches ? "dark" : "light", false);
+    }
+  });
+}
+
+// Khởi chạy đồng bộ trạng thái theme ban đầu
+initTheme();
+

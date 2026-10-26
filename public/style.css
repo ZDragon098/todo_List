@@ -7,6 +7,8 @@
    BẢNG THÔNG SỐ VÀ HỆ THỐNG BIẾN THIẾT KẾ ĐA SẮC (VIBRANT DESIGN TOKENS)
    ========================================================================== */
 :root {
+  color-scheme: light;
+
   /* Hệ thống phông chữ (2+1 font discipline) */
   --font-family-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-family-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -94,6 +96,8 @@
    ========================================================================== */
 body[data-application-theme="dark"],
 [data-theme="dark"] {
+  color-scheme: dark;
+
   --color-paper-background: oklch(14% 0.012 265);
   --color-paper-surface: oklch(18% 0.015 265);
   --color-paper-elevated: oklch(22% 0.016 265);
@@ -182,7 +186,12 @@ body[data-application-theme="dark"] {
     radial-gradient(circle at 85% 75%, oklch(25% 0.07 235 / 0.3) 0px, transparent 35%);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-family-display);
   font-style: normal;
   font-weight: 600;
@@ -483,7 +492,8 @@ body[data-application-theme="dark"] .sidebar-sub-nav-link-active {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: background-color var(--transition-speed-standard), border-color var(--transition-speed-standard);
-  display: none; /* Hidden on desktop, shown on mobile */
+  display: none;
+  /* Hidden on desktop, shown on mobile */
 }
 
 .application-navigation-container {
@@ -576,29 +586,46 @@ body[data-application-theme="dark"] .sidebar-sub-nav-link-active {
   flex-shrink: 0;
 }
 
-/* Nút chuyển đổi chế độ tối (Theme Toggle Button) */
+/* Nút chuyển đổi chế độ tối (Theme Toggle Button) — Sidebar */
 .task-theme-toggle-button {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 12px;
-  background-color: var(--color-paper-surface);
-  border: 1px solid var(--color-border-hairline);
+  gap: 10px;
+  height: 40px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, var(--color-accent-indigo-subtle), var(--color-accent-cobalt-subtle));
+  border: 1px solid var(--color-accent-indigo-border);
   border-radius: var(--border-radius-pill);
   color: var(--color-ink-secondary);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-speed-fast);
   width: 100%;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.4s ease, border-color 0.4s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+body[data-application-theme="dark"] .task-theme-toggle-button {
+  background: linear-gradient(135deg, var(--color-accent-amber-subtle), var(--color-accent-emerald-subtle));
+  border-color: var(--color-accent-amber-border);
+  color: var(--color-ink-primary);
 }
 
 .task-theme-toggle-button:hover {
-  background-color: var(--color-paper-elevated);
-  border-color: var(--color-border-hover);
-  color: var(--color-ink-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px oklch(58% 0.22 280 / 0.2);
+  border-color: var(--color-accent-indigo);
+}
+
+body[data-application-theme="dark"] .task-theme-toggle-button:hover {
+  box-shadow: 0 4px 16px oklch(72% 0.19 65 / 0.25);
+  border-color: var(--color-accent-amber);
+}
+
+.task-theme-toggle-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .task-theme-toggle-button:focus-visible {
@@ -606,20 +633,106 @@ body[data-application-theme="dark"] .sidebar-sub-nav-link-active {
   box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
-/* Hiển thị icon theo theme hiện tại */
-body[data-application-theme="light"] .task-theme-icon-light {
-  display: none;
-}
-body[data-application-theme="light"] .task-theme-icon-dark {
-  display: inline-block;
+/* Wrapper chồng 2 icon lên nhau để animate rotate + fade */
+.task-theme-icon-wrapper {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
+.task-theme-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Nhãn text */
+.task-theme-toggle-text-label {
+  transition: opacity 0.3s ease;
+}
+
+/* ---- Trạng thái icon theo theme ---- */
+/* Chế độ SÁNG: ẩn mặt trời, hiện mặt trăng */
+body[data-application-theme="light"] .task-theme-icon-light {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+body[data-application-theme="light"] .task-theme-icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  color: var(--color-accent-indigo);
+}
+
+/* Chế độ TỐI: hiện mặt trời, ẩn mặt trăng */
 body[data-application-theme="dark"] .task-theme-icon-light {
-  display: inline-block;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
   color: var(--color-accent-amber);
 }
+
 body[data-application-theme="dark"] .task-theme-icon-dark {
-  display: none;
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+/* Nút chuyển đổi chế độ tối trên thanh điều hướng mobile */
+.task-theme-toggle-button-mobile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent-indigo-subtle), var(--color-accent-cobalt-subtle));
+  border: 1px solid var(--color-accent-indigo-border);
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.4s ease, border-color 0.4s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+body[data-application-theme="dark"] .task-theme-toggle-button-mobile {
+  background: linear-gradient(135deg, var(--color-accent-amber-subtle), var(--color-accent-emerald-subtle));
+  border-color: var(--color-accent-amber-border);
+}
+
+.task-theme-toggle-button-mobile:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 14px oklch(58% 0.22 280 / 0.22);
+  border-color: var(--color-accent-indigo);
+}
+
+body[data-application-theme="dark"] .task-theme-toggle-button-mobile:hover {
+  box-shadow: 0 4px 14px oklch(72% 0.19 65 / 0.28);
+  border-color: var(--color-accent-amber);
+}
+
+.task-theme-toggle-button-mobile:active {
+  transform: scale(0.95);
+}
+
+.task-theme-toggle-button-mobile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+/* Animation xoay khi nhấn nút chuyển đổi */
+@keyframes themeIconSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.task-theme-icon-wrapper.is-spinning {
+  animation: themeIconSpin 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .application-status-badge {
@@ -643,8 +756,17 @@ body[data-application-theme="dark"] .task-theme-icon-dark {
 }
 
 @keyframes pulse-emerald {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.75; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.75;
+  }
 }
 
 .application-status-indicator-label {
@@ -706,8 +828,15 @@ body[data-application-theme="dark"] .task-theme-icon-dark {
 }
 
 @keyframes section-fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Section Page Header */
@@ -974,6 +1103,8 @@ body[data-application-theme="dark"] #task-metric-card-completed {
   background-color: var(--color-paper-elevated);
   border: 1px solid var(--color-accent-indigo-border);
   border-radius: var(--border-radius-card);
+  max-width: 70%;
+  margin: 0 auto;
   padding: 24px;
   box-shadow: var(--box-shadow-card);
   display: flex;
@@ -1287,7 +1418,7 @@ body[data-application-theme="dark"] #task-metric-card-completed {
    PHẦN 3: THANH CÔNG CỤ TÌM KIẾM, LỌC & SẮP XẾP (TOOLBAR, FILTERS & SORTING)
    ========================================================================== */
 .task-toolbar-control-section {
-padding-top: 30px;
+  padding-top: 30px;
   display: flex;
   flex-direction: column;
 }
@@ -1341,6 +1472,71 @@ padding-top: 30px;
 
 .task-search-input-field::placeholder {
   color: var(--color-ink-muted);
+}
+
+/* Nút xóa tìm kiếm (X) */
+.task-search-clear-button {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: var(--color-paper-surface);
+  border-radius: 50%;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--transition-speed-fast), color var(--transition-speed-fast), transform var(--transition-speed-fast);
+}
+
+.task-search-clear-button:hover {
+  background: var(--color-accent-rose-subtle);
+  color: var(--color-accent-rose);
+  transform: scale(1.1);
+}
+
+/* Thông tin kết quả tìm kiếm */
+.task-search-result-info {
+  width: 100%;
+  padding: 6px 14px;
+  margin-top: 4px;
+  font-family: var(--font-family-monospace);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-accent-indigo);
+  background: var(--color-accent-indigo-subtle);
+  border: 1px solid var(--color-accent-indigo-border);
+  border-radius: var(--border-radius-small);
+  animation: searchResultFadeIn 0.25s ease-out;
+}
+
+@keyframes searchResultFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Highlight tìm kiếm */
+.task-search-highlight {
+  background: oklch(85% 0.18 90 / 0.45);
+  color: var(--color-ink-primary);
+  border-radius: 2px;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+body[data-application-theme="dark"] .task-search-highlight {
+  background: oklch(50% 0.18 90 / 0.55);
+  color: oklch(98% 0.05 90);
 }
 
 /* Bộ lọc chủ đề bo tròn hoàn hảo */
@@ -1518,7 +1714,7 @@ padding-top: 30px;
    PHẦN 4: DANH SÁCH CÔNG VIỆC (TASK LIST DISPLAY)
    ========================================================================== */
 .task-display-list-section {
-    padding-top: 30px;
+  padding-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1641,18 +1837,18 @@ body[data-application-theme="dark"] .task-item-checkbox-visual-box {
   transition: all var(--transition-speed-fast);
 }
 
-.task-item-checkbox-input:checked + .task-item-checkbox-visual-box {
+.task-item-checkbox-input:checked+.task-item-checkbox-visual-box {
   background-color: var(--color-accent-emerald);
   border-color: var(--color-accent-emerald);
   box-shadow: 0 0 10px oklch(65% 0.18 155 / 0.4);
 }
 
-.task-item-checkbox-input:checked + .task-item-checkbox-visual-box .task-item-checkbox-checkmark-svg {
+.task-item-checkbox-input:checked+.task-item-checkbox-visual-box .task-item-checkbox-checkmark-svg {
   opacity: 1;
   transform: scale(1);
 }
 
-.task-item-checkbox-input:focus-visible + .task-item-checkbox-visual-box {
+.task-item-checkbox-input:focus-visible+.task-item-checkbox-visual-box {
   outline: none;
   box-shadow: 0 0 0 3px oklch(65% 0.18 155 / 0.3);
 }
@@ -2042,6 +2238,7 @@ body[data-application-theme="dark"] .task-item-time-badge {
     opacity: 0;
     transform: translateY(10px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2581,6 +2778,7 @@ body[data-application-theme="dark"] .task-item-time-badge {
    CHẾ ĐỘ GIẢM THIỂU CHUYỂN ĐỘNG (PREFERS-REDUCED-MOTION)
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
