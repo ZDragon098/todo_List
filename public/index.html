@@ -256,7 +256,7 @@
           </div>
           <div class="task-metrics-grid">
 
-            <div class="task-metric-card" id="task-metric-card-total">
+            <button type="button" class="task-metric-card" id="task-metric-card-total">
               <div class="task-metric-card-header">
                 <span class="task-metric-card-title">TỔNG CÔNG VIỆC</span>
                 <span class="task-metric-card-tag">GET /todos</span>
@@ -265,9 +265,9 @@
                 <span id="task-summary-total-count" class="task-metric-card-number">0</span>
                 <span class="task-metric-card-unit">công việc</span>
               </div>
-            </div>
+            </button>
 
-            <div class="task-metric-card" id="task-metric-card-pending">
+            <button type = "button" class="task-metric-card" id="task-metric-card-pending">
               <div class="task-metric-card-header">
                 <span class="task-metric-card-title">ĐANG THỰC HIỆN</span>
                 <span class="task-metric-card-tag">done: false</span>
@@ -276,9 +276,9 @@
                 <span id="task-summary-pending-count" class="task-metric-card-number">0</span>
                 <span class="task-metric-card-unit">cần hoàn thành</span>
               </div>
-            </div>
+            </button>
 
-            <div class="task-metric-card" id="task-metric-card-completed">
+            <button type = "button" class="task-metric-card" id="task-metric-card-completed">
               <div class="task-metric-card-header">
                 <span class="task-metric-card-title">ĐÃ HOÀN THÀNH</span>
                 <span class="task-metric-card-tag">done: true</span>
@@ -287,7 +287,7 @@
                 <span id="task-summary-completed-count" class="task-metric-card-number">0</span>
                 <span class="task-metric-card-unit">đạt mục tiêu</span>
               </div>
-            </div>
+            </button>
 
           </div>
 
@@ -370,7 +370,7 @@
             </div>
 
             <!-- Bộ nút lọc trạng thái -->
-            <div class="task-filter-navigation-group" role="tablist" aria-label="Lọc theo trạng thái">
+            <!--<div class="task-filter-navigation-group" role="tablist" aria-label="Lọc theo trạng thái">
               <button type="button" id="task-filter-all-button"
                 class="task-filter-option-button task-filter-option-button-active" role="tab" aria-selected="true">
                 <span class="task-filter-option-label">Tất Cả</span>
@@ -386,7 +386,7 @@
                 <span class="task-filter-option-label">Đã Xong</span>
                 <span id="task-filter-counter-completed" class="task-filter-counter-pill">0</span>
               </button>
-            </div>
+            </div>-->
 
           </div>
         </section>
@@ -809,22 +809,33 @@
     </div>
   </footer>
 
-  <!-- Tệp Javascript xử lý logic nghiệp vụ và kết nối REST API -->
-  <script src="app.js"></script>
+  <!-- 1. Tiện ích dùng chung (format ngày, hiện toast...) - Độc lập nhất, nạp đầu tiên -->
+  <script src="./js/utils.js"></script>
 
-  <!-- Sidebar Navigation Script -->
+  <!-- 2. Giao tiếp API Backend (chỉ gọi fetch và trả về dữ liệu) -->
+  <script src="./js/api.js"></script>
+
+  <!-- 3. Tạo HTML, vẽ giao diện (dùng hàm của utils.js) -->
+  <script src="./js/render.js"></script>
+
+  <!-- 4. Quản lý Modal sửa, xóa (dùng hàm của utils.js và api.js) -->
+  <script src="./js/modal.js"></script>
+
+  <!-- 5. Lọc, tìm kiếm và sắp xếp -->
+  <script src="./js/filterSearch.js"></script>
+
+  <!-- 6. File trung tâm khởi chạy (gọi loadTodos, bắt sự kiện form, đổi theme) - Nạp CUỐI CÙNG -->
+  <script src="./js/main.js"></script>
+
   <script>
     (function () {
-      // === SIDEBAR NAVIGATION ===
       const sidebar = document.getElementById('application-sidebar');
       const overlay = document.getElementById('sidebar-overlay');
       const toggleBtn = document.getElementById('sidebar-toggle-button');
       const allNavLinks = document.querySelectorAll('.sidebar-nav-link[data-section], .sidebar-sub-nav-link[data-section]');
       const allSections = document.querySelectorAll('.content-section');
       const toggleParent = document.querySelector('.sidebar-nav-link-toggle');
-      const subNav = document.querySelector('.sidebar-sub-nav');
 
-      // Toggle sidebar on mobile
       if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
           sidebar.classList.toggle('sidebar-open');
@@ -839,7 +850,6 @@
         });
       }
 
-      // Toggle submenu (Theo dõi)
       if (toggleParent) {
         toggleParent.addEventListener('click', () => {
           const parentItem = toggleParent.closest('.sidebar-nav-item-has-sub');
@@ -847,30 +857,25 @@
         });
       }
 
-      // Section switching
       allNavLinks.forEach(link => {
         link.addEventListener('click', () => {
           const targetSection = link.getAttribute('data-section');
-
-          // Remove active from all links
           allNavLinks.forEach(l => l.classList.remove('sidebar-nav-link-active', 'sidebar-sub-nav-link-active'));
           document.querySelectorAll('.sidebar-nav-link:not([data-section])').forEach(l => l.classList.remove('sidebar-nav-link-active'));
-
-          // Add active to clicked link
           link.classList.add(link.classList.contains('sidebar-sub-nav-link') ? 'sidebar-sub-nav-link-active' : 'sidebar-nav-link-active');
-
-          // Show target section, hide others
           allSections.forEach(s => s.classList.remove('content-section-active'));
           const target = document.getElementById(targetSection);
           if (target) target.classList.add('content-section-active');
-
-          // Close mobile sidebar
-          sidebar.classList.remove('sidebar-open');
-          overlay.classList.remove('sidebar-overlay-visible');
+          if (sidebar) sidebar.classList.remove('sidebar-open');
+          if (overlay) overlay.classList.remove('sidebar-overlay-visible');
         });
       });
     })();
   </script>
+
+
+  <!-- Chỉ cần nạp duy nhất file entry point này -->
+  <!--<script type="module" src="./js/main.js"></script>-->
 </body>
 
 </html>

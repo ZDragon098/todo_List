@@ -121,6 +121,7 @@ const sortCaption = document.getElementById("task-list-current-sort-caption");
 
 function changeMiliSecond(card) {
   const deadline = card.getAttribute("data-task-deadline");
+  if (!deadline) return Infinity;  
   const time = card.getAttribute("data-task-time") || "23:59";
   return new Date(`${deadline}T${time}`).getTime();
 }
@@ -218,11 +219,9 @@ async function loadTodos() {
                 <div class="task-item-metadata-row">
                   <span class="task-item-identifier-badge">ID: #${formattedId}</span>
                   <span class="task-item-status-tag ${statusTagClass}">${statusText}</span>
-
                   <span class="task-item-topic-badge">
                     ${todo.topic || "Chưa phân loại"}
                   </span>
-
                   ${todo.deadline ? `
                   <span class="task-item-deadline-badge task-item-deadline-badge-normal">
                     Hạn chót: ${formatDate(todo.deadline)}
@@ -731,7 +730,6 @@ if (window.matchMedia) {
     }
   });
 }
-
 // Khởi chạy đồng bộ trạng thái theme ban đầu
 initTheme();
 

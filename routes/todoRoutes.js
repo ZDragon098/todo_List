@@ -28,10 +28,11 @@ router.post("/", checkTitle, (req, res) => {
     id: todos.length ? Math.max(...todos.map(t => t.id)) + 1 : 1,
     title: req.body.title,
     description: req.body.description,
-    topic: req.body.topic,
+    topic: req.body.topic ,
     deadline: req.body.deadline,
     time: req.body.time,
-    done: req.body.done || false
+    done: req.body.done || false,
+    subTasks: req.body.subTasks
   }
 
   todos.push(todo);
